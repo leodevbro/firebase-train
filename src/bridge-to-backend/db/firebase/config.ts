@@ -1,0 +1,1 @@
+export const aaaa002 = 7;
