@@ -1,6 +1,10 @@
-import { IMyEnv } from "src/main-interfaces/sweet";
+// Import the functions you need from the SDKs you need
+import { initializeApp } from "firebase/app";
+// import { getAnalytics } from "firebase/analytics";
+// TODO: Add SDKs for Firebase products that you want to use
+// https://firebase.google.com/docs/web/setup#available-libraries
 
-export const aaaa002 = 7;
+import { IMyEnv } from "src/main-interfaces/sweet";
 
 const myEnv = process.env as IMyEnv;
 
@@ -22,3 +26,7 @@ const firebaseConfig = {
   appId: myEnv.REACT_APP_FIREBASE_APP_ID,
   measurementId: myEnv.REACT_APP_FIREBASE_MEASUREMENT_ID,
 };
+
+// Initialize Firebase
+export const firebaseApp = initializeApp(firebaseConfig);
+// const analytics = getAnalytics(app);
