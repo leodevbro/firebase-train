@@ -1,10 +1,25 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
+import {
+  getFirestore,
+  collection,
+  getDocs,
+  addDoc,
+  DocumentData,
+  doc,
+  setDoc,
+} from "firebase/firestore";
 // import { getAnalytics } from "firebase/analytics";
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 
 import { IMyEnv } from "src/main-interfaces/sweet";
+
+interface IBooks {
+  id: string;
+  author: string;
+  title: string;
+}
 
 const myEnv = process.env as IMyEnv;
 
@@ -29,4 +44,49 @@ const firebaseConfig = {
 
 // Initialize Firebase
 export const firebaseApp = initializeApp(firebaseConfig);
+
+export const firebaseDb = getFirestore(firebaseApp);
+
+const booksCollectionRef = collection(firebaseDb, "books");
+
 // const firebaseAnalytics = getAnalytics(firebaseApp);
+
+const firebaseDocIntoSimple = (docData: DocumentData) => {};
+
+getDocs(booksCollectionRef)
+  .then((snapshot) => {
+    console.log(snapshot);
+    const books = snapshot.docs.map((doc) => {
+      const theData = doc.data() as Omit<IBooks, "id">;
+
+      const book: IBooks = {
+        id: doc.id,
+        ...theData,
+      };
+
+      return book;
+    });
+
+    console.log(books);
+  })
+  .catch((err) => {
+    console.log(err.message);
+  });
+
+const objToSend: Omit<IBooks, "id"> = {
+  author: "aaa1",
+  title: "ttt1",
+};
+
+// addDoc(booksCollectionRef, objToSend);
+
+export const firebaseDb_addBook = async (objAsInput: Omit<IBooks, "id">, customId?: string) => {
+  if (customId) {
+    // TODO: jer sheamowmos ID
+    await setDoc(doc(firebaseDb, "books", customId), objAsInput);
+    return customId;
+  } else {
+    const addedDoc = await addDoc(booksCollectionRef, objAsInput);
+    return addedDoc.id;
+  }
+};

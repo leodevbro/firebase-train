@@ -2,14 +2,35 @@ import React from "react";
 import logo from "./logo.svg";
 import { Counter } from "./features/counter/Counter";
 import "./App.css";
+import { firebaseDb } from "./bridge-to-backend/db/firebase/config";
+import { db_addBook } from "./bridge-to-backend/db/api";
+
+console.log(typeof firebaseDb);
 
 const App: React.FC = () => {
   //
-  
 
   return (
     <div className="App">
       <header className="App-header">
+        <button
+          onClick={async () => {
+            try {
+              const ifOfAddedBook = await db_addBook(
+                {
+                  author: "au---" + String(Date.now()),
+                  title: "ti---" + String(Date.now()),
+                },
+                "custId---" + String(Date.now()),
+              );
+              console.log(ifOfAddedBook);
+            } catch (err) {
+              console.log(err);
+            }
+          }}
+        >
+          Add doc
+        </button>
         <img src={logo} className="App-logo" alt="logo" />
         <Counter />
         <p>
