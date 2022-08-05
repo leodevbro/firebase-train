@@ -49,6 +49,14 @@ type tySimpleDoc_withoutId = {
   id?: never;
 };
 
+// REACT_APP_FIREBASE_API_KEY=AIzaSyAYaf4zponZlfDYxPeGna5Fb5OBD51WXWo
+// REACT_APP_FIREBASE_AUTHDOMAIN=dojo001projectid.firebaseapp.com
+// REACT_APP_FIREBASE_PROJECT_ID=dojo001projectid
+// REACT_APP_FIREBASE_STORAGE_BUCKET=dojo001projectid.appspot.com
+// REACT_APP_FIREBASE_MESSAGING_SENDER_ID=764305287151
+// REACT_APP_FIREBASE_APP_ID=1:764305287151:web:425b2c4175d35c227f781a
+// REACT_APP_FIREBASE_MEASUREMENT_ID=G-3NF1GTLPQF
+
 const myEnv = process.env as IMyEnv;
 
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
