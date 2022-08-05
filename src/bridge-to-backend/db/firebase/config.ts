@@ -12,6 +12,7 @@ import {
   setDoc,
   DocumentSnapshot,
   QueryDocumentSnapshot,
+  onSnapshot,
 } from "firebase/firestore";
 // import { getAnalytics } from "firebase/analytics";
 // TODO: Add SDKs for Firebase products that you want to use
@@ -215,14 +216,38 @@ export const firebaseDb_addDoc = async (
 // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
+//
+
 firebaseDb_getCollection_byPath(["books"]).then((x) => {
+  console.log("initial books:");
   console.log(x);
 });
 
 firebaseDb_getDoc_byPath(["bookss", "custId---1659591717164"]).then((x) => {
+  console.log("iniital one doc:");
   console.log(x);
 });
+
+//
 
 // get subcollection:
 // const subColRef = collection(db, "/", "bookss", "custId---1659591717164", "myssikes");
 // console.log(subColRef.id);
+
+// real time listener of collection:
+onSnapshot(collection(db, "/", "books"), (snapshot) => {
+  const myDocs = snapshot.docs.map((doc) => {
+    const simpleDoc = firebaseDocIntoSimpleDoc(doc);
+    return simpleDoc;
+  });
+
+  console.log("aaaabaa000");
+  console.log(myDocs);
+});
+
+// real time listener of doc:
+onSnapshot(doc(db, "/", "books", "i4"), (snapshot) => {
+  const simpleDoc = firebaseDocIntoSimpleDoc(snapshot);
+  console.log("aaaabaa");
+  console.log(simpleDoc);
+});

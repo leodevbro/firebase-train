@@ -16,7 +16,8 @@ const App: React.FC = () => {
             try {
               const idOfAddedBook = await dbApi0.addDoc(
                 // ["books", "custId---" + String(Date.now())],
-                ["bookss", "custId---1659591717164", "myssikes", "iii001"],
+                ["books"],
+                // ["bookss", "custId---1659591717164", "myssikes", "iii001"],
                 {
                   // author: "au---" + String(Date.now()),
                   // title: "ti---" + String(Date.now()),
