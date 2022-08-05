@@ -2,10 +2,8 @@ import React from "react";
 import logo from "./logo.svg";
 import { Counter } from "./features/counter/Counter";
 import "./App.css";
-import { firebaseDb } from "./bridge-to-backend/db/firebase/config";
-import { db_addBook } from "./bridge-to-backend/db/api";
-
-console.log(typeof firebaseDb);
+// import { db } from "./bridge-to-backend/db/firebase/config";
+import { dbApi } from "./bridge-to-backend/db/api";
 
 const App: React.FC = () => {
   //
@@ -16,14 +14,19 @@ const App: React.FC = () => {
         <button
           onClick={async () => {
             try {
-              const ifOfAddedBook = await db_addBook(
+              const idOfAddedBook = await dbApi.addDoc(
+                // ["books", "custId---" + String(Date.now())],
+                ["books"],
                 {
-                  author: "au---" + String(Date.now()),
-                  title: "ti---" + String(Date.now()),
+                  // author: "au---" + String(Date.now()),
+                  // title: "ti---" + String(Date.now()),
+                  // id: undefined,
+                  author: null,
+                  title: "hey",
+                  // id: void,
                 },
-                "custId---" + String(Date.now()),
               );
-              console.log(ifOfAddedBook);
+              console.log("idOfAddedBook:", idOfAddedBook);
             } catch (err) {
               console.log(err);
             }

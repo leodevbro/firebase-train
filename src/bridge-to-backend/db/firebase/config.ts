@@ -3,11 +3,14 @@ import { initializeApp } from "firebase/app";
 import {
   getFirestore,
   collection,
+  getDoc,
   getDocs,
   addDoc,
   DocumentData,
   doc,
   setDoc,
+  DocumentSnapshot,
+  QueryDocumentSnapshot,
 } from "firebase/firestore";
 // import { getAnalytics } from "firebase/analytics";
 // TODO: Add SDKs for Firebase products that you want to use
@@ -15,11 +18,36 @@ import {
 
 import { IMyEnv } from "src/main-interfaces/sweet";
 
-interface IBooks {
-  id: string;
-  author: string;
-  title: string;
+interface IFirestoreTimeStamp {
+  nanoseconds: number;
+  seconds: number;
 }
+
+interface IFirestoreGeoPoint {
+  latitude: number;
+  longitude: number;
+}
+
+type tyFirestoreDocField =
+  | null
+  | boolean
+  | string
+  | number
+  | IFirestoreTimeStamp
+  | IFirestoreGeoPoint
+  | tyFirestoreDocField[]
+  | { [key: string]: tyFirestoreDocField };
+
+interface ISimpleDoc_withId {
+  [key: string]: tyFirestoreDocField;
+  id: string;
+}
+
+type tySimpleDoc_withoutId = {
+  [key: string]: tyFirestoreDocField;
+} & {
+  id?: never;
+};
 
 const myEnv = process.env as IMyEnv;
 
@@ -43,26 +71,100 @@ const firebaseConfig = {
 };
 
 // Initialize Firebase
-export const firebaseApp = initializeApp(firebaseConfig);
+const firebaseApp = initializeApp(firebaseConfig);
 
-export const firebaseDb = getFirestore(firebaseApp);
+const db = getFirestore(firebaseApp);
 
-const booksCollectionRef = collection(firebaseDb, "books");
+// const booksCollectionRef = collection(db, CollectionsEnum.books);
 
 // const firebaseAnalytics = getAnalytics(firebaseApp);
 
-const firebaseDocIntoSimple = (docData: DocumentData) => {};
+// ==========================
+// ==========================
+// ==========================
+// ==========================
 
-getDocs(booksCollectionRef)
+const firebaseDocIntoSimpleDoc = (
+  rawDoc: DocumentSnapshot<DocumentData> | QueryDocumentSnapshot<DocumentData>,
+) => {
+  if (rawDoc.exists()) {
+    const simpleData_withoutId: tySimpleDoc_withoutId = rawDoc.data();
+
+    const simpleData_withId: ISimpleDoc_withId = {
+      ...simpleData_withoutId,
+      id: rawDoc.id,
+    };
+
+    return simpleData_withId;
+  } else {
+    return null;
+  }
+};
+
+// ---------------------------------------------------------------------------
+// ---------------------------------------------------------------------------
+// ---------------------------------------------------------------------------
+// ---------------------------------------------------------------------------
+// ---------------------------------------------------------------------------
+// ---------------------------------------------------------------------------
+// ---------------------------------------------------------------------------
+// ---------------------------------------------------------------------------
+// ---------------------------------------------------------------------------
+
+export const firebaseDb_getDoc_byPath = async (
+  pathSegments: string[], // last item is the id
+) => {
+  if (pathSegments.length % 2 !== 0) {
+    console.log(`pathSegments.length is probably odd. It must be even.`);
+    return null;
+  }
+
+  const docRef = doc(db, "/", ...pathSegments);
+  const docSnap = await getDoc(docRef);
+
+  const simpleDoc = firebaseDocIntoSimpleDoc(docSnap);
+  return simpleDoc;
+};
+
+export const firebaseDb_addDoc = async (
+  pathSegments: string[], // if number of segments is even, then the last segment is the custom id of the new doc
+  objAsInput: tySimpleDoc_withoutId,
+): Promise<string | null> => {
+  const numberOfSegmentsIsEven = pathSegments.length % 2 === 0;
+  const customId = numberOfSegmentsIsEven ? pathSegments[pathSegments.length - 1] : null;
+
+  if (customId) {
+    const newDocRef = doc(db, "/", ...pathSegments);
+
+    const existing = await getDoc(newDocRef);
+
+    if (existing.exists()) {
+      console.log("already exists");
+      return null;
+    } else {
+      await setDoc(newDocRef, objAsInput);
+      return customId;
+    }
+  } else {
+    // with auto id
+    const collectionRef = collection(db, "/", ...pathSegments);
+    const addedDoc = await addDoc(collectionRef, objAsInput);
+    return addedDoc.id;
+  }
+};
+
+// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+getDocs(collection(db, "/", "books"))
   .then((snapshot) => {
     console.log(snapshot);
     const books = snapshot.docs.map((doc) => {
-      const theData = doc.data() as Omit<IBooks, "id">;
-
-      const book: IBooks = {
-        id: doc.id,
-        ...theData,
-      };
+      const book = firebaseDocIntoSimpleDoc(doc);
 
       return book;
     });
@@ -73,20 +175,9 @@ getDocs(booksCollectionRef)
     console.log(err.message);
   });
 
-const objToSend: Omit<IBooks, "id"> = {
-  author: "aaa1",
-  title: "ttt1",
-};
+const mydd = firebaseDb_getDoc_byPath(["books", "4Csh2KNwQ8joV3QM5WlT"]);
+console.log(mydd);
 
-// addDoc(booksCollectionRef, objToSend);
-
-export const firebaseDb_addBook = async (objAsInput: Omit<IBooks, "id">, customId?: string) => {
-  if (customId) {
-    // TODO: jer sheamowmos ID
-    await setDoc(doc(firebaseDb, "books", customId), objAsInput);
-    return customId;
-  } else {
-    const addedDoc = await addDoc(booksCollectionRef, objAsInput);
-    return addedDoc.id;
-  }
-};
+// get subcollection:
+// const subColRef = collection(db, "/", "bookss", "custId---1659591717164", "myssikes");
+// console.log(subColRef.id);
