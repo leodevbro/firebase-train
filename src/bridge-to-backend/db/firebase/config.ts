@@ -6,6 +6,7 @@ import {
   getDoc,
   getDocs,
   addDoc,
+  deleteDoc,
   DocumentData,
   doc,
   setDoc,
@@ -83,8 +84,6 @@ const firebaseApp = initializeApp(firebaseConfig);
 
 const db = getFirestore(firebaseApp);
 
-// const booksCollectionRef = collection(db, CollectionsEnum.books);
-
 // const firebaseAnalytics = getAnalytics(firebaseApp);
 
 // ==========================
@@ -134,6 +133,33 @@ export const firebaseDb_getDoc_byPath = async (
   return simpleDoc;
 };
 
+//
+
+export const firebaseDb_deleteDoc_byPath = async (
+  pathSegments: string[], // last item is the id
+) => {
+  if (pathSegments.length % 2 !== 0) {
+    console.log(`pathSegments.length is probably odd. It must be even.`);
+    return null;
+  }
+
+  const docRef = doc(db, "/", ...pathSegments);
+
+  const existing = await getDoc(docRef);
+
+  const docId = pathSegments[pathSegments.length - 1];
+
+  if (existing.exists()) {
+    await deleteDoc(docRef);
+    return docId;
+  } else {
+    console.log(`${docId} already deleted`);
+    return `${docId} already deleted`;
+  }
+};
+
+//
+
 export const firebaseDb_getCollection_byPath = async (
   pathSegments: string[], // last item is the id
 ) => {
@@ -152,6 +178,8 @@ export const firebaseDb_getCollection_byPath = async (
 
   return myDocs;
 };
+
+//
 
 export const firebaseDb_addDoc = async (
   pathSegments: string[], // if number of segments is even, then the last segment is the custom id of the new doc
@@ -187,7 +215,7 @@ export const firebaseDb_addDoc = async (
 // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
-firebaseDb_getCollection_byPath(["bookss", "custId---1659591717164", "myssikes"]).then((x) => {
+firebaseDb_getCollection_byPath(["books"]).then((x) => {
   console.log(x);
 });
 

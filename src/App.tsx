@@ -3,7 +3,7 @@ import logo from "./logo.svg";
 import { Counter } from "./features/counter/Counter";
 import "./App.css";
 // import { db } from "./bridge-to-backend/db/firebase/config";
-import { dbApi } from "./bridge-to-backend/db/api";
+import { dbApi0 } from "./bridge-to-backend/db/api";
 
 const App: React.FC = () => {
   //
@@ -14,9 +14,9 @@ const App: React.FC = () => {
         <button
           onClick={async () => {
             try {
-              const idOfAddedBook = await dbApi.addDoc(
+              const idOfAddedBook = await dbApi0.addDoc(
                 // ["books", "custId---" + String(Date.now())],
-                ["books"],
+                ["bookss", "custId---1659591717164", "myssikes", "iii001"],
                 {
                   // author: "au---" + String(Date.now()),
                   // title: "ti---" + String(Date.now()),
@@ -34,6 +34,20 @@ const App: React.FC = () => {
         >
           Add doc
         </button>
+
+        <button
+          onClick={async () => {
+            try {
+              const messageOfDeletedDoc = await dbApi0.deleteDoc(["books", "375otTIgWspS5n0Z8uCV"]);
+              console.log(messageOfDeletedDoc);
+            } catch (err) {
+              console.log(err);
+            }
+          }}
+        >
+          Delete doc
+        </button>
+
         <img src={logo} className="App-logo" alt="logo" />
         <Counter />
         <p>
