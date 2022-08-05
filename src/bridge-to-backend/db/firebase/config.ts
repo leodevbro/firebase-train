@@ -134,6 +134,25 @@ export const firebaseDb_getDoc_byPath = async (
   return simpleDoc;
 };
 
+export const firebaseDb_getCollection_byPath = async (
+  pathSegments: string[], // last item is the id
+) => {
+  if (pathSegments.length % 2 !== 1) {
+    console.log(`pathSegments.length is probably even. It must be odd.`);
+    return null;
+  }
+
+  const collectionRef = collection(db, "/", ...pathSegments);
+  const snapshot = await getDocs(collectionRef);
+
+  const myDocs = snapshot.docs.map((doc) => {
+    const simpleDoc = firebaseDocIntoSimpleDoc(doc);
+    return simpleDoc;
+  });
+
+  return myDocs;
+};
+
 export const firebaseDb_addDoc = async (
   pathSegments: string[], // if number of segments is even, then the last segment is the custom id of the new doc
   objAsInput: tySimpleDoc_withoutId,
@@ -168,23 +187,13 @@ export const firebaseDb_addDoc = async (
 // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
-getDocs(collection(db, "/", "books"))
-  .then((snapshot) => {
-    console.log(snapshot);
-    const books = snapshot.docs.map((doc) => {
-      const book = firebaseDocIntoSimpleDoc(doc);
+firebaseDb_getCollection_byPath(["bookss", "custId---1659591717164", "myssikes"]).then((x) => {
+  console.log(x);
+});
 
-      return book;
-    });
-
-    console.log(books);
-  })
-  .catch((err) => {
-    console.log(err.message);
-  });
-
-const mydd = firebaseDb_getDoc_byPath(["books", "4Csh2KNwQ8joV3QM5WlT"]);
-console.log(mydd);
+firebaseDb_getDoc_byPath(["bookss", "custId---1659591717164"]).then((x) => {
+  console.log(x);
+});
 
 // get subcollection:
 // const subColRef = collection(db, "/", "bookss", "custId---1659591717164", "myssikes");
