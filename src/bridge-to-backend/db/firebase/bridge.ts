@@ -107,6 +107,25 @@ export const firebaseDb_getDoc_byPath = async (
 
 //
 
+export const firebaseDb_updateDoc_byPath = async (
+  pathSegments: string[], // last item is the id
+  updatingFields: tySimpleDoc_withoutId, // can be only the fields which are being updated
+) => {
+  if (pathSegments.length % 2 !== 0) {
+    console.log(`pathSegments.length is probably odd. It must be even.`);
+    return null;
+  }
+
+  const id = pathSegments[pathSegments.length - 1];
+
+  const docRef = doc(db, "/", ...pathSegments);
+  await updateDoc(docRef, updatingFields);
+
+  return id;
+};
+
+//
+
 export const firebaseDb_deleteDoc_byPath = async (
   pathSegments: string[], // last item is the id
 ) => {

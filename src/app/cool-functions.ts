@@ -2,4 +2,9 @@ import _ from "lodash";
 
 export const debounce = _.debounce;
 
-const debouncedFn = debounce(() => 4, 450);
+const myFn = () => {
+  console.log(1);
+};
+
+const debouncedFn = debounce(myFn, 1000);
+

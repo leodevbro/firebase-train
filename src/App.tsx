@@ -7,7 +7,6 @@ import { dbApi, dbApi0 } from "./bridge-to-backend/db/api";
 
 import { serverTimestamp } from "firebase/firestore";
 
-
 const App: React.FC = () => {
   //
 
@@ -77,6 +76,19 @@ const App: React.FC = () => {
           }}
         >
           get all books
+        </button>
+
+        <button
+          onClick={async () => {
+            try {
+              const theId = await dbApi.updateOneBook();
+              console.log(theId);
+            } catch (err) {
+              console.log(err);
+            }
+          }}
+        >
+          update one book
         </button>
 
         <img src={logo} className="App-logo" alt="logo" />
