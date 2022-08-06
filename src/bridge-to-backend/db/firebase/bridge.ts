@@ -18,6 +18,7 @@ import {
   Query,
   CollectionReference,
   Unsubscribe,
+  FieldValue,
 } from "firebase/firestore";
 // import { getAnalytics } from "firebase/analytics";
 // TODO: Add SDKs for Firebase products that you want to use
@@ -40,6 +41,9 @@ type tyFirestoreDocField =
   | number
   | IFirestoreTimeStamp
   | IFirestoreGeoPoint
+  // as only for input to db [start]
+  | FieldValue // for serverTimestamp()
+  // as only for input to db [end]
   | tyFirestoreDocField[]
   | { [key: string]: tyFirestoreDocField };
 
@@ -208,7 +212,7 @@ firebaseDb_getDoc_byPath(["bookss", "custId---1659591717164"]).then((x) => {
 // ================
 // real time listener of collection:
 /*
-onSnapshot(collection(db, "/", "books"), (snapshot) => {
+const unsub1: Unsubscribe = onSnapshot(collection(db, "/", "books"), (snapshot) => {
   const myDocs = snapshot.docs.map((doc) => {
     const simpleDoc = firebaseDocIntoSimpleDoc(doc);
     return simpleDoc;
@@ -221,7 +225,7 @@ onSnapshot(collection(db, "/", "books"), (snapshot) => {
 
 // real time listener of doc:
 /*
-const unsub: Unsubscribe =  onSnapshot(doc(db, "/", "books", "i4"), (snapshot) => {
+const unsub2: Unsubscribe = onSnapshot(doc(db, "/", "books", "i4"), (snapshot) => {
   const simpleDoc = firebaseDocIntoSimpleDoc(snapshot);
   console.log("aaaabaa");
   console.log(simpleDoc);

@@ -5,6 +5,9 @@ import "./App.css";
 // import { db } from "./bridge-to-backend/db/firebase/config";
 import { dbApi, dbApi0 } from "./bridge-to-backend/db/api";
 
+import { serverTimestamp } from "firebase/firestore";
+
+
 const App: React.FC = () => {
   //
 
@@ -24,6 +27,7 @@ const App: React.FC = () => {
                   // id: undefined,
                   author: null,
                   title: "hey",
+                  createdAt: serverTimestamp(),
                   // id: void,
                 },
               );
@@ -60,6 +64,19 @@ const App: React.FC = () => {
           }}
         >
           get super docs
+        </button>
+
+        <button
+          onClick={async () => {
+            try {
+              const myItems = await dbApi.getAllbooks();
+              console.log(myItems);
+            } catch (err) {
+              console.log(err);
+            }
+          }}
+        >
+          get all books
         </button>
 
         <img src={logo} className="App-logo" alt="logo" />

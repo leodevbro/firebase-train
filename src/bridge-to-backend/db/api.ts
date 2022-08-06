@@ -1,4 +1,4 @@
-import { collection, query, where } from "firebase/firestore";
+import { collection, orderBy, query, where } from "firebase/firestore";
 import {
   firebaseDb_addDoc,
   firebaseDb_getDoc_byPath,
@@ -17,7 +17,23 @@ export const dbApi = {
   addDoc: firebaseDb_addDoc,
   getBooksOfPatrick: async () => {
     const myItems = await firebaseDb_getCollection_byQuery(
-      query(collection(db, "/", "books"), where("author", "==", "Patrick Rothfuss")),
+      query(
+        collection(db, "/", "books"),
+        where("author", "==", "Patrick Rothfuss"),
+        orderBy("tist", "asc"),
+      ),
+    );
+
+    return myItems;
+  },
+
+  getAllbooks: async () => {
+    const myItems = await firebaseDb_getCollection_byQuery(
+      query(
+        collection(db, "/", "books"),
+        // where("author", "==", "Patrick Rothfuss"),
+        // orderBy("tist", "asc"),
+      ),
     );
 
     return myItems;
