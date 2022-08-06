@@ -1,54 +1,66 @@
-// Import the functions you need from the SDKs you need
-import { initializeApp } from "firebase/app";
-import { getFirestore } from "firebase/firestore";
+import {db} from "./config";
+
+import {
+  getFirestore,
+  collection,
+  getDoc,
+  getDocs,
+  addDoc,
+  deleteDoc,
+  DocumentData,
+  doc,
+  setDoc,
+  DocumentSnapshot,
+  QueryDocumentSnapshot,
+  onSnapshot,
+  query,
+  where,
+  Query,
+  CollectionReference,
+} from "firebase/firestore";
 // import { getAnalytics } from "firebase/analytics";
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 
-import { IMyEnv } from "src/main-interfaces/sweet";
 
-// REACT_APP_FIREBASE_API_KEY=AIzaSyAYaf4zponZlfDYxPeGna5Fb5OBD51WXWo
-// REACT_APP_FIREBASE_AUTHDOMAIN=dojo001projectid.firebaseapp.com
-// REACT_APP_FIREBASE_PROJECT_ID=dojo001projectid
-// REACT_APP_FIREBASE_STORAGE_BUCKET=dojo001projectid.appspot.com
-// REACT_APP_FIREBASE_MESSAGING_SENDER_ID=764305287151
-// REACT_APP_FIREBASE_APP_ID=1:764305287151:web:425b2c4175d35c227f781a
-// REACT_APP_FIREBASE_MEASUREMENT_ID=G-3NF1GTLPQF
 
-const myEnv = process.env as IMyEnv;
+interface IFirestoreTimeStamp {
+  nanoseconds: number;
+  seconds: number;
+}
 
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
-const firebaseConfig = {
-  //   apiKey: "AIzaSyAYaf4zponZlfDYxPeGna5Fb5OBD51WXWo",
-  //   authDomain: "dojo001projectid.firebaseapp.com",
-  //   projectId: "dojo001projectid",
-  //   storageBucket: "dojo001projectid.appspot.com",
-  //   messagingSenderId: "764305287151",
-  //   appId: "1:764305287151:web:425b2c4175d35c227f781a",
-  //   measurementId: "G-3NF1GTLPQF",
+interface IFirestoreGeoPoint {
+  latitude: number;
+  longitude: number;
+}
 
-  apiKey: myEnv.REACT_APP_FIREBASE_API_KEY,
-  authDomain: myEnv.REACT_APP_FIREBASE_AUTHDOMAIN,
-  projectId: myEnv.REACT_APP_FIREBASE_PROJECT_ID,
-  storageBucket: myEnv.REACT_APP_FIREBASE_STORAGE_BUCKET,
-  messagingSenderId: myEnv.REACT_APP_FIREBASE_MESSAGING_SENDER_ID,
-  appId: myEnv.REACT_APP_FIREBASE_APP_ID,
-  measurementId: myEnv.REACT_APP_FIREBASE_MEASUREMENT_ID,
+type tyFirestoreDocField =
+  | null
+  | boolean
+  | string
+  | number
+  | IFirestoreTimeStamp
+  | IFirestoreGeoPoint
+  | tyFirestoreDocField[]
+  | { [key: string]: tyFirestoreDocField };
+
+interface ISimpleDoc_withId {
+  [key: string]: tyFirestoreDocField;
+  id: string;
+}
+
+type tySimpleDoc_withoutId = {
+  [key: string]: tyFirestoreDocField;
+} & {
+  id?: never;
 };
 
-// Initialize Firebase
-const firebaseApp = initializeApp(firebaseConfig);
 
-export const db = getFirestore(firebaseApp);
-
-// const firebaseAnalytics = getAnalytics(firebaseApp);
 
 // ==========================
 // ==========================
 // ==========================
 // ==========================
-
-/*
 
 const firebaseDocIntoSimpleDoc = (
   rawDoc: DocumentSnapshot<DocumentData> | QueryDocumentSnapshot<DocumentData>,
@@ -190,6 +202,8 @@ export const firebaseDb_addDoc = async (
 
 //
 
+/*
+
 firebaseDb_getCollection_byPath(["books"]).then((x) => {
   console.log("initial books:");
   console.log(x);
@@ -207,11 +221,15 @@ firebaseDb_getDoc_byPath(["bookss", "custId---1659591717164"]).then((x) => {
   console.log(x);
 });
 
+*/
+
 //
 
 // get subcollection:
 // const subColRef = collection(db, "/", "bookss", "custId---1659591717164", "myssikes");
 // console.log(subColRef.id);
+
+/*
 
 // real time listener of collection:
 onSnapshot(collection(db, "/", "books"), (snapshot) => {

@@ -3,7 +3,7 @@ import logo from "./logo.svg";
 import { Counter } from "./features/counter/Counter";
 import "./App.css";
 // import { db } from "./bridge-to-backend/db/firebase/config";
-import { dbApi0 } from "./bridge-to-backend/db/api";
+import { dbApi, dbApi0 } from "./bridge-to-backend/db/api";
 
 const App: React.FC = () => {
   //
@@ -47,6 +47,19 @@ const App: React.FC = () => {
           }}
         >
           Delete doc
+        </button>
+
+        <button
+          onClick={async () => {
+            try {
+              const myItems = await dbApi.getBooksOfPatrick();
+              console.log(myItems);
+            } catch (err) {
+              console.log(err);
+            }
+          }}
+        >
+          get super docs
         </button>
 
         <img src={logo} className="App-logo" alt="logo" />
