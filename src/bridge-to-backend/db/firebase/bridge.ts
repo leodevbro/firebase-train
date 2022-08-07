@@ -1,4 +1,4 @@
-import { db } from "./config";
+import { auth, db } from "./config";
 
 import {
   collection,
@@ -20,6 +20,23 @@ import {
   Unsubscribe,
   FieldValue,
 } from "firebase/firestore";
+
+import {
+  createUserWithEmailAndPassword,
+  signOut,
+  signInWithEmailAndPassword,
+  sendPasswordResetEmail,
+  deleteUser,
+  updateProfile,
+  User,
+  updateEmail,
+  updatePassword,
+  reauthenticateWithCredential,
+  EmailAuthProvider,
+} from "firebase/auth";
+
+import { onAuthStateChanged } from "firebase/auth";
+
 // import { getAnalytics } from "firebase/analytics";
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
@@ -250,3 +267,91 @@ const unsub2: Unsubscribe = onSnapshot(doc(db, "/", "books", "i4"), (snapshot) =
   console.log(simpleDoc);
 });
 */
+
+// '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+// '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+// '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+// '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+// '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+// '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+
+// USERS:
+
+export const createUser = (email: string, password: string) => {
+  return createUserWithEmailAndPassword(auth, email, password);
+};
+
+export const logout = () => {
+  return signOut(auth);
+};
+
+export const login = (email: string, password: string) => {
+  return signInWithEmailAndPassword(auth, email, password);
+};
+
+export const sendResetPassword = (email: string) => {
+  return sendPasswordResetEmail(auth, email);
+};
+
+const deleteCurrentUser = async (password: string) => {
+  if (auth.currentUser && auth.currentUser.email) {
+    const credential = EmailAuthProvider.credential(auth.currentUser.email, password);
+
+    await reauthenticateWithCredential(auth.currentUser, credential);
+    deleteUser(auth.currentUser);
+  }
+};
+
+const currUser: {
+  v: null | User;
+} = {
+  v: null,
+};
+
+const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
+  console.log("currentUser:", currentUser);
+  currUser.v = currentUser;
+
+  currentUser?.providerData.forEach((profile) => {
+    console.log("-----------------");
+    console.log("Sign-in provider: " + profile.providerId);
+    console.log("  Provider-specific UID: " + profile.uid);
+    console.log("  Name: " + profile.displayName);
+    console.log("  Email: " + profile.email);
+    console.log("  Photo URL: " + profile.photoURL);
+  });
+  if (currentUser) {
+    // console.log(currentUser);
+  } else {
+    //
+  }
+});
+
+// =======================
+// test:
+
+const login000 = () => {
+  login("user002@mymail.com", "user000");
+};
+
+const update001 = async () => {
+  if (currUser.v) {
+    await updateProfile(currUser.v, {
+      displayName: "Jane Q. User",
+      photoURL: "https://example.com/jane-q-user/profile.jpg",
+    });
+
+    console.log("updated");
+  }
+};
+
+const updateMyMail = async () => {
+  if (auth.currentUser) {
+    await updateEmail(auth.currentUser, "jokonda@mymail.com");
+    console.log("updated");
+  }
+};
+
+setTimeout(() => {
+  // login000();
+}, 5000);
